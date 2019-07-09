@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>登录页面</title>
+    <!-- Canonical SEO -->
+    <script type="text/javascript" src="/static/layui/layui.js"></script>
+    <script type="text/javascript" src="/static/assets/js/core/jquery.3.2.1.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery.form/4.2.1/jquery.form.js"></script>
+    <script type="text/javascript" src="/static/assets/js/core/popper.min.js"></script>
+    <script type="text/javascript" src="/static/assets/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="/static/layui/css/layui.css">
+    <link href="/static/assets/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="/static/assets/css/now-ui-kit.css?v=1.1.0" rel="stylesheet" />
+</head>
+<body class="login-page sidebar-collapse">
+    <!-- End Navbar -->
+    <div class="page-header" filter-color="orange">
+        <div class="page-header-image" style="background-image:url(static/assets/img/login.jpg)"></div>
+        <div class="container">
+            <div class="col-md-4 content-center">
+                <div class="card card-login card-plain">
+                    <form  method="post" id="form">
+                        <div class="header header-primary text-center">
+                            <div class="logo-container">
+                                <img src="/static/assets/img/invision-white-slim.png" alt="">
+                            </div>
+                        </div>
+                        <div class="content">
+                            <div class="input-group form-group-no-border input-lg">
+                                <span class="input-group-addon">
+                                    <i class="now-ui-icons users_circle-08"></i>
+                                </span>
+                                <input type="text" class="form-control" name="username" placeholder="用户名">
+                            </div>
+                            <div class="input-group form-group-no-border input-lg">
+                                <span class="input-group-addon">
+                                    <i class="layui-icon layui-icon-password"></i>
+                                </span>
+                                <input type="password" placeholder="密码" name="password" class="form-control" />
+                            </div>
+                            <div class="input-group form-group-no-border input-lg">
+                                <input type="text" value="" placeholder="请输入验证码（不区分大小写）" id="check" class="form-control">
+                                <canvas id="canvas" width="100" height="30"></canvas>
+                            </div>
+                        </div>
+                        <div class="footer text-center">
+                            <button id="login" class="btn btn-primary btn-round btn-lg btn-block">登录</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+            <div class="container">
+                    &copy;
+                    <script>
+                        document.write(new Date().getFullYear())
+                    </script>, Designed by AAA. Coded by <a href="#" target="_blank" title="分期租">分期租</a> - Collect from <a href="#" title="AAA" target="_blank">AAA</a>
+            </div>
+        </footer>
+    </div>
+</body>
+<script type="text/javascript">
+    $(function(){
+        var show_num = [];
+        draw(show_num);
+        $("#canvas").on('click',function(){
+            draw(show_num);
+        });
+        $("#login").click(function () {
+            var options = {
+                url: "login",
+                success: function (data) {
+                    if(data.success==1){
+                            var val = $("#check").val().toLowerCase();
+                            var num = show_num.join("");
+                            if(val==''){
+                                alert('请输入验证码！');
+                            }else if(val == num){
+                                $("#check").val('');
+                                location.href="index";
+                                // draw(show_num);
+                            }else{
+                                alert('验证码错误！请重新输入！');
+                                $("#check").val('');
+                                // draw(show_num);
+                            }
+
+                    }else {
+                        alert(data.error);
+                    }
+                }
+            };
+            $("#form").ajaxForm(options);
+        });
+    })
+    //生成并渲染出验证码图形
+    function draw(show_num) {
+        var canvas_width=$('#canvas').width();
+        var canvas_height=$('#canvas').height();
+        var canvas = document.getElementById("canvas");//获取到canvas的对象，演员
+        var context = canvas.getContext("2d");//获取到canvas画图的环境，演员表演的舞台
+        canvas.width = canvas_width;
+        canvas.height = canvas_height;
+        var sCode = "a,b,c,d,e,f,g,h,i,j,k,m,n,p,q,r,s,t,u,v,w,x,y,z,A,B,C,E,F,G,H,J,K,L,M,N,P,Q,R,S,T,W,X,Y,Z,1,2,3,4,5,6,7,8,9,0";
+        var aCode = sCode.split(",");
+        var aLength = aCode.length;//获取到数组的长度
+        for (var i = 0; i < 4; i++) { //这里的for循环可以控制验证码位数（如果想显示6位数，4改成6即可）
+            var j = Math.floor(Math.random() * aLength);//获取到随机的索引值
+            // var deg = Math.random() * 30 * Math.PI / 180;//产生0~30之间的随机弧度
+            var deg = Math.random() - 0.5; //产生一个随机弧度
+            var txt = aCode[j];//得到随机的一个内容
+            show_num[i] = txt.toLowerCase();
+            var x = 10 + i * 20;//文字在canvas上的x坐标
+            var y = 20 + Math.random() * 8;//文字在canvas上的y坐标
+            context.font = "bold 23px 微软雅黑";
+            context.translate(x, y);
+            context.rotate(deg);
+            context.fillStyle = randomColor();
+            context.fillText(txt, 0, 0);
+            context.rotate(-deg);
+            context.translate(-x, -y);
+        }
+        for (var i = 0; i <= 5; i++) { //验证码上显示线条
+            context.strokeStyle = randomColor();
+            context.beginPath();
+            context.moveTo(Math.random() * canvas_width, Math.random() * canvas_height);
+            context.lineTo(Math.random() * canvas_width, Math.random() * canvas_height);
+            context.stroke();
+        }
+        for (var i = 0; i <= 30; i++) { //验证码上显示小点
+            context.strokeStyle = randomColor();
+            context.beginPath();
+            var x = Math.random() * canvas_width;
+            var y = Math.random() * canvas_height;
+            context.moveTo(x, y);
+            context.lineTo(x + 1, y + 1);
+            context.stroke();
+        }
+    }
+    //得到随机的颜色值
+    function randomColor() {
+        var r = Math.floor(Math.random() * 256);
+        var g = Math.floor(Math.random() * 256);
+        var b = Math.floor(Math.random() * 256);
+        return "rgb(" + r + "," + g + "," + b + ")";
+    }
+</script>
+
+</html>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="aaa.tenancy.dao.LoginDao">
+    <select id="login" resultType="aaa.tenancy.entity.Users">
+        select * from users where username=#{username} and password=#{password}
+    </select>
+    <select id="findByUsername" resultType="aaa.tenancy.entity.Users">
+        select * from users where username=#{username}
+    </select>
+    <select id="getFirstModule" resultType="aaa.tenancy.entity.Module">
+        select distinct m.* from users u inner join user_role ur on u.id=ur.u_id
+                                 inner join role r on r.rid=ur.r_id
+                                 inner join role_module rm on rm.r_id=r.rid
+                                 inner join module m on m.id=rm.m_id
+                                 where u.id=#{id} and m.level_=1
+    </select>
+    <select id="getSecondModule" resultType="aaa.tenancy.entity.Module">
+        select distinct m.* from users u inner join user_role ur on u.id=ur.u_id
+                                 inner join role r on r.rid=ur.r_id
+                                 inner join role_module rm on rm.r_id=r.rid
+                                 inner join module m on m.id=rm.m_id
+                                 where u.id=#{user.id} and m.level_=2 and m.pid=#{parent.id}
+    </select>
+    <select id="queryPermits" resultType="java.lang.String">
+        select distinct m.permit from users u inner join user_role ur on u.id=ur.u_id
+                                 inner join role r on r.rid=ur.r_id
+                                 inner join role_module rm on rm.r_id=r.rid
+                                 inner join module m on m.id=rm.m_id
+                                 where u.id=#{id}
+    </select>
+</mapper>
