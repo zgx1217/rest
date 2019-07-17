@@ -40,7 +40,8 @@
         </ul>
     </div>
 
-    <div class="layui-side layui-bg-black" id="menu">
+    <div class="layui-side layui-bg-black" >
+        <div class="layui-side-scroll" id="menu"></div>
     </div>
 
     <div class="layui-body">
@@ -69,7 +70,7 @@
         {{#  }); }}
     </ul>
 </script>
-<script>
+<script type="text/javascriptv ">
     //JavaScript代码区域
     layui.use('element','type', function () {
         var element = layui.element;
@@ -93,6 +94,7 @@
                 menu.innerHTML = html;
             });
             element.init();
+            element.render('nav');
         });
     });
 </script>
